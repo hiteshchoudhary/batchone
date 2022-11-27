@@ -1,0 +1,26 @@
+{
+  "name": "batchone",
+  "version": "1.0.0",
+  "description": "A full stack project for e-comm - this is backend part",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hiteshchoudhary/batchone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hiteshchoudhary/batchone/issues"
+  },
+  "homepage": "https://github.com/hiteshchoudhary/batchone#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.7.3"
+  }
+}
