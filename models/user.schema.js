@@ -16,17 +16,17 @@ const userSchema = mongoose.Schema(
         email: {
             type: String,
             required: [true, "Email is required"],
-            unique: true    
+            unique: true
         },
         password: {
             type: String,
             required: [true, "password is required"],
             minLength: [8, "password must be at least 8 characters"],
-            select: false   
+            select: false
         },
         role: {
             type: String,
-            enum : Object.values(AuthRoles),
+            enum: Object.values(AuthRoles),
             default: AuthRoles.USER
         },
         forgotPasswordToken: String,
@@ -38,8 +38,8 @@ const userSchema = mongoose.Schema(
 );
 
 // challenge 1 - encrypt password - hooks
-userSchema.pre("save", async function(next){
-    if(!this.modified("password")) return next();
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) return next();
     this.password = await bcrypt.hash(this.password, 10)
     next()
 })
@@ -47,12 +47,12 @@ userSchema.pre("save", async function(next){
 // add more featuers directly to your schema
 userSchema.methods = {
     //compare password
-    comparePassword: async function(enteredPassword){
+    comparePassword: async function (enteredPassword) {
         return await bcrypt.compare(enteredPassword, this.password)
     },
 
     //generate JWT TOKEN
-    getJwtToken: function(){
+    getJwtToken: function () {
         return JWT.sign(
             {
                 _id: this._id,
