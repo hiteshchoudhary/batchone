@@ -177,7 +177,40 @@ export const resetPassword = asyncHandler(async (req, res) => {
     setCookies(user, res)
 })
 
-// TODO: create a controller for change password
+/******************************************************
+ * @CHANGE_PASSWORD
+ * @REQUEST_TYPE POST
+ * @route http://localhost:5000/api/auth/changepassword
+ * @description check for token, validate the old password and set the new password
+ * @parameters 
+ * @returns User Object
+ ******************************************************/
+export const changePassword = asyncHandler(async (req, res) => {
+    // grabbing only email from auth-middlewrae return value
+    const email = req.user.email
+    // grabbing old password
+    const { old_password } = req.body
+    const { new_password } = req.body
+    if (!email) {
+        throw new CustomError('User not found', 404)
+    }
+    if (!old_password) {
+        throw new CustomError('Inavlid input', 400)
+    }
+    const user = await User.findOne({ email })
+    const isCorrectPassword = user.comparePassword(old_password)
+    if (!isCorrectPassword) {
+        throw new CustomError('Incorrect Credentials', 400)
+    }
+    // setting new password
+    user.password = new_password
+    await user.save()
+    user.password = undefined
+    res.status(200).json({
+        success: true,
+        user
+    })
+})
 
 /******************************************************
  * @GET_PROFILE
