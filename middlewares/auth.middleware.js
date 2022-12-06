@@ -15,7 +15,7 @@ export const isLoggedIn = asyncHandler(async (req, _res, next) => {
     }
 
     if (!token) {
-        throw new CustomError('NOt authorized to access this route', 401)
+        throw new CustomError('Not authorized to access this route', 401)
     }
 
     try {
