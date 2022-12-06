@@ -3,13 +3,7 @@ import asyncHandler from '../services/asyncHandler'
 import CustomError from '../utils/customError'
 import mailHelper from '../utils/mailHelper'
 import crypto from 'crypto'
-
-
-export const cookieOptions = {
-    expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-    //could be in a separate file in utils
-}
+import setCookies from '../utils/setCookies.js'
 
 
 /******************************************************
@@ -20,16 +14,16 @@ export const cookieOptions = {
  * @returns User Object
  ******************************************************/
 export const signUp = asyncHandler(async (req, res) => {
-    const {name, email, password } = req.body
+    const { name, email, password } = req.body
 
     if (!name || !email || !password) {
         throw new CustomError('Please fill all fields', 400)
     }
     //check if user exists
-    const existingUser = await User.findOne({email})
+    const existingUser = await User.findOne({ email })
 
     if (existingUser) {
-        throw new CustomError('User already exists', 400)  
+        throw new CustomError('User already exists', 400)
     }
 
     const user = await User.create({
@@ -37,18 +31,7 @@ export const signUp = asyncHandler(async (req, res) => {
         email,
         password
     });
-    const token = user.getJwtToken()
-    console.log(user);
-    user.password = undefined
-
-    res.cookie("token", token, cookieOptions)
-
-    res.status(200).json({
-        success: true,
-        token,
-        user
-    })
-
+    setCookies(user, res)
 })
 
 /******************************************************
@@ -62,11 +45,11 @@ export const signUp = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
-    if ( !email || !password) {
+    if (!email || !password) {
         throw new CustomError('Please fill all fields', 400)
     }
 
-    const user = await User.findOne({email}).select("+password")
+    const user = await User.findOne({ email }).select("+password")
 
     if (!user) {
         throw new CustomError('Invalid credentials', 400)
@@ -75,14 +58,7 @@ export const login = asyncHandler(async (req, res) => {
     const isPasswordMatched = await user.comparePassword(password)
 
     if (isPasswordMatched) {
-        const token = user.getJwtToken()
-        user.password = undefined;
-        res.cookie("token", token, cookieOptions)
-        return res.status(200).json({
-            success: true,
-            token,
-            user
-        })
+        setCookies(user, res)
     }
 
     throw new CustomError('Invalid credentials - pass', 400)
@@ -117,20 +93,20 @@ export const logout = asyncHandler(async (_req, res) => {
  * @returns success message - email send
  ******************************************************/
 
-export const forgotPassword = asyncHandler(async(req, res) => {
-    const {email} = req.body
+export const forgotPassword = asyncHandler(async (req, res) => {
+    const { email } = req.body
     //check email for null or ""
 
-    const user = await User.findOne({email})
+    const user = await User.findOne({ email })
     if (!user) {
         throw new CustomError('User not found', 404)
     }
     const resetToken = user.generateForgotPasswordToken()
 
-    await user.save({validateBeforeSave: false})
+    await user.save({ validateBeforeSave: false })
 
-    const resetUrl = 
-    `${req.protocol}://${req.get("host")}/api/auth/password/reset/${resetToken}`
+    const resetUrl =
+        `${req.protocol}://${req.get("host")}/api/auth/password/reset/${resetToken}`
 
     const text = `Your password reset url is
     \n\n ${resetUrl}\n\n
@@ -140,7 +116,7 @@ export const forgotPassword = asyncHandler(async(req, res) => {
         await mailHelper({
             email: user.email,
             subject: "Password reset email for website",
-            text:text,
+            text: text,
         })
         res.status(200).json({
             success: true,
@@ -151,7 +127,7 @@ export const forgotPassword = asyncHandler(async(req, res) => {
         user.forgotPasswordToken = undefined
         user.forgotPasswordExpiry = undefined
 
-        await user.save({validateBeforeSave: false})
+        await user.save({ validateBeforeSave: false })
 
         throw new CustomError(err.message || 'Email sent failure', 500)
     }
@@ -167,18 +143,18 @@ export const forgotPassword = asyncHandler(async(req, res) => {
  ******************************************************/
 
 export const resetPassword = asyncHandler(async (req, res) => {
-    const {token: resetToken} = req.params
-    const {password, confirmPassword } = req.body
+    const { token: resetToken } = req.params
+    const { password, confirmPassword } = req.body
 
     const resetPasswordToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex')
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex')
 
     // User.findOne({email: email})
     const user = await User.findOne({
         forgotPasswordToken: resetPasswordToken,
-        forgotPasswordExpiry: {$gt: Date.now()}
+        forgotPasswordExpiry: { $gt: Date.now() }
     });
 
     if (!user) {
@@ -195,17 +171,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
     await user.save()
 
-    //create token and send as response
-    const token = user.getJwtToken()
-    user.password = undefined
-
-    //helper method for cookie can be added
-    res.cookie("token", token, cookieOptions)
-    res.status(200).json({
-        success:true,
-        user
-    })
-
+    setCookies(user, res)
 })
 
 // TODO: create a controller for change password
@@ -218,8 +184,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
  * @parameters 
  * @returns User Object
  ******************************************************/
-export const getProfile = asyncHandler(async(req, res) => {
-    const {user} = req
+export const getProfile = asyncHandler(async (req, res) => {
+    const { user } = req
     if (!user) {
         throw new CustomError('User not found', 404)
     }
