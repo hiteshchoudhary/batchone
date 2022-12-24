@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hiteshchoudhary/batchone#readme",
   "dependencies": {
+    "aws-sdk": "^2.1278.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
