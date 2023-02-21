@@ -3,14 +3,7 @@ import asyncHandler from '../services/asyncHandler'
 import CustomError from '../utils/customError'
 import mailHelper from '../utils/mailHelper'
 import crypto from 'crypto'
-
-
-export const cookieOptions = {
-    expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-    //could be in a separate file in utils
-}
-
+import cookieOptions from '../Utils/cookieOptions'
 
 /******************************************************
  * @SIGNUP
