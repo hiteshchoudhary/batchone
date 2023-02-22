@@ -86,16 +86,12 @@ export const login = asyncHandler(async (req, res) => {
 /******************************************************
  * @LOGOUT
  * @route http://localhost:5000/api/auth/logout
- * @description User logout bby clearing user cookies
+ * @description User logout by clearing user cookies
  * @parameters  
  * @returns success message
  ******************************************************/
 export const logout = asyncHandler(async (_req, res) => {
-    // res.clearCookie()
-    res.cookie("token", null, {
-        expires: new Date(Date.now()),
-        httpOnly: true
-    })
+    res.clearCookie()
     res.status(200).json({
         success: true,
         message: "Logged Out"
@@ -112,7 +108,10 @@ export const logout = asyncHandler(async (_req, res) => {
 
 export const forgotPassword = asyncHandler(async(req, res) => {
     const {email} = req.body
-    //check email for null or ""
+
+    if (!email) {
+        throw new CustomError( 'Enter email', 404)
+    }
 
     const user = await User.findOne({email})
     if (!user) {
