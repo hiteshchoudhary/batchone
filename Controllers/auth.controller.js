@@ -51,7 +51,6 @@ export const signUp = asyncHandler(async (req, res) => {
  * @parameters  email, password
  * @returns User Object
  ******************************************************/
-
 export const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
@@ -105,7 +104,6 @@ export const logout = asyncHandler(async (_req, res) => {
  * @parameters  email
  * @returns success message - email send
  ******************************************************/
-
 export const forgotPassword = asyncHandler(async(req, res) => {
     const {email} = req.body
 
@@ -157,7 +155,6 @@ export const forgotPassword = asyncHandler(async(req, res) => {
  * @parameters  token from url, password and confirmpass
  * @returns User object
  ******************************************************/
-
 export const resetPassword = asyncHandler(async (req, res) => {
     const {token: resetToken} = req.params
     const {password, confirmPassword } = req.body
@@ -200,7 +197,37 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 })
 
-// TODO: create a controller for change password
+/******************************************************
+ * @RESET_PASSWORD
+ * @route http://localhost:5000/api/auth/password/change
+ * @description User will be able to change password
+ * @parameters  currentPassword, password, confirmPassword
+ * @returns User object
+ ******************************************************/
+export const changePassword = asyncHandler( (req, res) => {
+    const {currentPassword, password, confirmPassword } = req.body
+    const {user} = req
+    if (!user) {
+        throw new CustomError('User not found', 404)
+    }
+    const isPasswordMatched = await user.comparePassword(currentPassword)
+
+    if (isPasswordMatched) {
+        if (password !== confirmPassword) {
+            throw new CustomError('password and conf password does not match', 400)
+        }
+        user.password = password
+        user.save()
+        user.password = undefined
+        res.status(200).json({
+            success:true,
+            user
+        })
+    }
+    
+    throw new CustomError('Invalid Password', 404)
+})
+
 
 /******************************************************
  * @GET_PROFILE
