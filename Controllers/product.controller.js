@@ -93,7 +93,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 /**********************************************************
  * @GET_ALL_PRODUCT
- * @route https://localhost:5000/api/product
+ * @route https://localhost:5000/api/getAllProducts
  * @description Controller used for getting all products details
  * @description User and admin can get all the prducts
  * @returns Products Object
@@ -113,7 +113,7 @@ export const getAllProducts = asyncHandler( async (req, res) => {
 
 /**********************************************************
  * @GET_PRODUCT_BY_ID
- * @route https://localhost:5000/api/product
+ * @route https://localhost:5000/api/getProduct/:id
  * @description Controller used for getting single product details
  * @description User and admin can get single product details
  * @returns Product Object
