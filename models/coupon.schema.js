@@ -4,7 +4,8 @@ const couponSchema = new mongoose.Schema(
     {
         code: {
             type: String,
-            required: [true, 'Please provide a coupon name']
+            required: [true, 'Please provide a coupon name'],
+            unique: true 
         },
         discount: {
             type: Number,
@@ -17,7 +18,7 @@ const couponSchema = new mongoose.Schema(
     },
     {
         timestamps: true
-    }
+    } 
 )
 
 export default mongoose.model("Coupon", couponSchema);
