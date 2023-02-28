@@ -5,11 +5,10 @@ import CustomError from '../utils/customError'
 /******************************************************
  * @Create_COLLECTION
  * @route http://localhost:5000/api/collection
- * @description User signUp Controller for creating new user
- * @parameters name, email, password
- * @returns User Object
+ * @description createCollection Controller for creating new Collection
+ * @parameters name
+ * @returns collection Object
  ******************************************************/
-
 export const createCollection = asyncHandler(async (req, res) => {
     //take name from front end
     const { name } = req.body
@@ -29,8 +28,15 @@ export const createCollection = asyncHandler(async (req, res) => {
         collection
     })
 
-})
+}) 
 
+/******************************************************
+ * @Update_COLLECTION
+ * @route http://localhost:5000/api/updateCollection/:collectionId
+ * @description updateCollection Controller for updateing Collection
+ * @parameters collectionId from url, name
+ * @returns collection Object
+ ******************************************************/
 export const updateCollection = asyncHandler(async (req, res) => {
     //existing value to be updates
     const {id: collectionId} = req.params
@@ -65,6 +71,13 @@ export const updateCollection = asyncHandler(async (req, res) => {
 
 })
 
+/******************************************************
+ * @Delete_COLLECTION
+ * @route http://localhost:5000/api/deleteCollection/:collectionId
+ * @description deleteCollection Controller for deleteing Collection
+ * @parameters collectionId from url
+ * @returns Object
+ ******************************************************/
 export const deleteCollection = asyncHandler(async(req, res) => {
     const {id: collectionId} = req.params
 
@@ -83,7 +96,13 @@ export const deleteCollection = asyncHandler(async(req, res) => {
     })
 })
 
-
+/******************************************************
+ * @Get_All_COLLECTION
+ * @route http://localhost:5000/api/getAllCollections
+ * @description Controller for geting all Collections
+ * @parameters 
+ * @returns collections Object
+ ******************************************************/
 export const getAllCollections = asyncHandler(async(req, res) => {
     const collections = await Collection.find()
 

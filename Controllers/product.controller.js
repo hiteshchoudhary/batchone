@@ -15,8 +15,6 @@ import config from "../config/index.js"
  * @descriptio Uses AWS S3 Bucket for image upload
  * @returns Product Object
  *********************************************************/
-
-
 export const addProduct = asyncHandler(async (req, res) => {
     const form = formidable({
         multiples: true,
@@ -68,8 +66,16 @@ export const addProduct = asyncHandler(async (req, res) => {
             })
 
             if (!product) {
-                throw new CustomError("Product was not created", 400)
                 //remove image
+                let deleteImgArray = Promise.all(
+                    Object.keys(files).map(async (filekey, index) => {
+                        await deleteFile({
+                            bucketName: config.S3_BUCKET_NAME,
+                            key: `products/${productId}/photo_${index + 1}.png`
+                        })
+                    })
+                )
+                throw new CustomError("Product was not created", 400)
             }
             res.status(200).json({
                 success: true,
@@ -83,16 +89,15 @@ export const addProduct = asyncHandler(async (req, res) => {
             })
         }
     })
-})
+}) 
 
 /**********************************************************
  * @GET_ALL_PRODUCT
- * @route https://localhost:5000/api/product
+ * @route https://localhost:5000/api/getAllProducts
  * @description Controller used for getting all products details
  * @description User and admin can get all the prducts
  * @returns Products Object
  *********************************************************/
-
 export const getAllProducts = asyncHandler( async (req, res) => {
     const products = await Product.find({})
 
@@ -108,13 +113,11 @@ export const getAllProducts = asyncHandler( async (req, res) => {
 
 /**********************************************************
  * @GET_PRODUCT_BY_ID
- * @route https://localhost:5000/api/product
+ * @route https://localhost:5000/api/getProduct/:id
  * @description Controller used for getting single product details
  * @description User and admin can get single product details
  * @returns Product Object
  *********************************************************/
-
-
 export const getProductById = asyncHandler( async (req, res) => {
     const {id: productId} = req.params
 
